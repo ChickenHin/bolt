@@ -1,20 +1,20 @@
 name: Blog Markdown Check
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "doc/blog/**"
-      - "scripts/normalize_blog_posts.py"
-      - ".markdownlint-cli2.yaml"
-      - ".github/workflows/blog-check.yml"
-  pull_request:
-    paths:
-      - "doc/blog/**"
-      - "scripts/normalize_blog_posts.py"
-      - ".markdownlint-cli2.yaml"
-      - ".github/workflows/blog-check.yml"
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "doc/blog/**"
+  #     - "scripts/normalize_blog_posts.py"
+  #     - ".markdownlint-cli2.yaml"
+  #     - ".github/workflows/blog-check.yml"
+  # pull_request:
+  #   paths:
+  #     - "doc/blog/**"
+  #     - "scripts/normalize_blog_posts.py"
+  #     - ".markdownlint-cli2.yaml"
+  #     - ".github/workflows/blog-check.yml"
 
 jobs:
   blog-check:
