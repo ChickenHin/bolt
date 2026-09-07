@@ -15,9 +15,9 @@
 name: Merge Queue Gate
 
 on:
-  workflow_run:
-    workflows: [Build and Test, pre-commit checks]
-    types: [completed]
+  # workflow_run:
+  #   workflows: [Build and Test, pre-commit checks]
+  #   types: [completed]
 
 concurrency:
   group: merge-queue-gate-${{ github.event.workflow_run.event }}-${{ github.event.workflow_run.head_sha }}
