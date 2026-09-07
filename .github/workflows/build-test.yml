@@ -39,10 +39,7 @@ env:
   # Bump this when external CI images/tooling change without a tree change.
   CI_REUSE_SALT: >-
     bolt-ci:20260114|conan-server:latest|build-test-v2
-  CI_BASE_SHA: >-
-    ${{ github.event_name == 'pull_request' &&
-        github.event.pull_request.base.sha ||
-        github.event.merge_group.base_sha }}
+  CI_BASE_SHA: "163107b97455edc369e7a941b33a1c38f5ff6909"
 
 jobs:
   reuse-check:
