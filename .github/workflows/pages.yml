@@ -1,16 +1,16 @@
 name: Deploy Blog to GitHub Pages
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "doc/blog/**"
-      - "static/logo.png"
-      - "scripts/normalize_blog_posts.py"
-      - ".markdownlint-cli2.yaml"
-      - ".github/workflows/blog-check.yml"
-      - ".github/workflows/pages.yml"
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "doc/blog/**"
+  #     - "static/logo.png"
+  #     - "scripts/normalize_blog_posts.py"
+  #     - ".markdownlint-cli2.yaml"
+  #     - ".github/workflows/blog-check.yml"
+  #     - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
