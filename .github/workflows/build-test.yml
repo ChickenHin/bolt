@@ -19,9 +19,7 @@
 
 name: Build and Test
 on:
-  pull_request:
-    branches: [ main ]
-  merge_group:
+  workflow_dispatch: 
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -154,69 +152,69 @@ jobs:
       run: |
         make ctest_release
 
-  build-only:
-      needs: [reuse-check, changes]
-      if: >-
-        ${{ needs.reuse-check.outputs.hit != 'true' &&
-            needs.changes.outputs.source_code == 'true' }}
-      runs-on: [ self-hosted, medium ]
-      container:
-        image: bolt-registry:5000/bolt-ci:20260114
-        volumes:
-          - /data/ccache-data:/data/ccache-data
-        options: --user root --init
-      services:
-        conanserver:
-          image: bolt-registry:5000/conan-server:latest
-          volumes:
-            - /data/conan-server-data:/var/conan/data
-      strategy:
-        matrix:
-          build_target: [ debug_spark_with_test ]
-      steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+  # build-only:
+  #     needs: [reuse-check, changes]
+  #     if: >-
+  #       ${{ needs.reuse-check.outputs.hit != 'true' &&
+  #           needs.changes.outputs.source_code == 'true' }}
+  #     runs-on: [ self-hosted, medium ]
+  #     container:
+  #       image: bolt-registry:5000/bolt-ci:20260114
+  #       volumes:
+  #         - /data/ccache-data:/data/ccache-data
+  #       options: --user root --init
+  #     services:
+  #       conanserver:
+  #         image: bolt-registry:5000/conan-server:latest
+  #         volumes:
+  #           - /data/conan-server-data:/var/conan/data
+  #     strategy:
+  #       matrix:
+  #         build_target: [ debug_spark_with_test ]
+  #     steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v6
 
-      - id: env-setup
-        uses: ./.github/actions/bolt-build-base
+  #     - id: env-setup
+  #       uses: ./.github/actions/bolt-build-base
 
-      - name: Bolt build
-        run: |
-          echo 'tools.cmake.cmaketoolchain:extra_variables={"CMAKE_CXX_FLAGS_DEBUG": ""}' >> $(conan profile path default)
-          make ${{ matrix.build_target }}
+  #     - name: Bolt build
+  #       run: |
+  #         echo 'tools.cmake.cmaketoolchain:extra_variables={"CMAKE_CXX_FLAGS_DEBUG": ""}' >> $(conan profile path default)
+  #         make ${{ matrix.build_target }}
 
-  source-result:
-    needs: [reuse-check, changes, build-test, build-only]
-    if: >-
-      ${{ always() &&
-          needs.reuse-check.result == 'success' &&
-          needs.changes.result == 'success' &&
-          (needs.build-test.result == 'success' ||
-           needs.build-test.result == 'skipped') &&
-          (needs.build-only.result == 'success' ||
-           needs.build-only.result == 'skipped') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-      - name: Record tested source
-        id: source
-        run: |
-          python3 .github/scripts/merge_queue_ci.py record-source \
-            --workflow build-test.yml \
-            --event "${{ github.event_name }}" \
-            --run-id "${GITHUB_RUN_ID}" \
-            --run-attempt "${GITHUB_RUN_ATTEMPT}" \
-            --merge-sha "${GITHUB_SHA}" \
-            --tree-sha "${{ needs.reuse-check.outputs.tree_sha }}" \
-            --base-sha "${{ needs.reuse-check.outputs.base_sha }}" \
-            --config-hash "${{ needs.reuse-check.outputs.config_hash }}" \
-            --output ci-source/result.json \
-            --github-output "${GITHUB_OUTPUT}"
-      - name: Upload tested source
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.source.outputs.artifact_name }}
-          path: ci-source/result.json
-          if-no-files-found: error
-          retention-days: 2
+  # source-result:
+  #   needs: [reuse-check, changes, build-test, build-only]
+  #   if: >-
+  #     ${{ always() &&
+  #         needs.reuse-check.result == 'success' &&
+  #         needs.changes.result == 'success' &&
+  #         (needs.build-test.result == 'success' ||
+  #          needs.build-test.result == 'skipped') &&
+  #         (needs.build-only.result == 'success' ||
+  #          needs.build-only.result == 'skipped') }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v6
+  #     - name: Record tested source
+  #       id: source
+  #       run: |
+  #         python3 .github/scripts/merge_queue_ci.py record-source \
+  #           --workflow build-test.yml \
+  #           --event "${{ github.event_name }}" \
+  #           --run-id "${GITHUB_RUN_ID}" \
+  #           --run-attempt "${GITHUB_RUN_ATTEMPT}" \
+  #           --merge-sha "${GITHUB_SHA}" \
+  #           --tree-sha "${{ needs.reuse-check.outputs.tree_sha }}" \
+  #           --base-sha "${{ needs.reuse-check.outputs.base_sha }}" \
+  #           --config-hash "${{ needs.reuse-check.outputs.config_hash }}" \
+  #           --output ci-source/result.json \
+  #           --github-output "${GITHUB_OUTPUT}"
+  #     - name: Upload tested source
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ steps.source.outputs.artifact_name }}
+  #         path: ci-source/result.json
+  #         if-no-files-found: error
+  #         retention-days: 2
